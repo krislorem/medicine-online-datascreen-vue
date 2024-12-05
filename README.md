@@ -1,7 +1,6 @@
 # medicine-online-datav0-vue3
 
 <img alt="Static Badge" src="https://img.shields.io/badge/vue-v3.3.4-blue">
-This template should help get you started developing with Vue 3 in Vite.
 
 > 中医大屏
 ## Recommended IDE Setup
