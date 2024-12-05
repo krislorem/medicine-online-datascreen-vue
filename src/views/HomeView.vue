@@ -30,8 +30,8 @@
               </button>
               <div class="ivu-carousel-list">
                 <div class="ivu-carousel-track higher"
-                  style="width: 119px; transform: translate3d(0px, 0px, 0px); transition: transform 500ms; visibility: visible;">
-                  <div class="ivu-carousel-item" style="width: 119px; height: auto; left: 0px;">
+                  style="width: 200%; transform: translate3d(0px, 0px, 0px); transition: transform 500ms; visibility: visible;">
+                  <div class="ivu-carousel-item" style="width: 50%; height: auto; left: 0px;">
                     <div class="res-topbar">
                       <span>{{ }}</span>
                       <span>{{ }}</span>
@@ -39,15 +39,35 @@
                     <div class="res-box">
                       <div class="res-item">
                         <span>单选</span>
-                        <p>{{ }}</p>
+                        <p>{{ }}题/{{ }}分</p>
                       </div>
                       <div class="res-item">
                         <span>多选</span>
-                        <p>{{ }}</p>
+                        <p>{{ }}题/{{ }}分</p>
                       </div>
                       <div class="res-item">
                         <span>简答</span>
-                        <p>{{ }}</p>
+                        <p>{{ }}题/{{ }}分</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="ivu-carousel-item" style="width: 50%; height: auto; left: 0px;">
+                    <div class="res-topbar">
+                      <span>{{ }}</span>
+                      <span>{{ }}</span>
+                    </div>
+                    <div class="res-box">
+                      <div class="res-item">
+                        <span>单选</span>
+                        <p>{{ }}题/{{ }}分</p>
+                      </div>
+                      <div class="res-item">
+                        <span>多选</span>
+                        <p>{{ }}题/{{ }}分</p>
+                      </div>
+                      <div class="res-item">
+                        <span>简答</span>
+                        <p>{{ }}题/{{ }}分</p>
                       </div>
                     </div>
                   </div>
@@ -526,6 +546,29 @@ body {
 .ivu-carousel-arrow-hover {
   display: inherit;
   opacity: 0
+}
+
+.ivu-icon {
+  display: inline-block;
+  font-family: Ionicons;
+  speak: none;
+  font-style: normal;
+  font-weight: 400;
+  font-variant: normal;
+  text-transform: none;
+  text-rendering: auto;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  vertical-align: middle
+}
+
+.ivu-icon-ios-arrow-back:before {
+  content: "‹"
+}
+
+.ivu-icon-ios-arrow-forward:before {
+  content: "›"
 }
 
 .ivu-carousel:hover .ivu-carousel-arrow-hover {
