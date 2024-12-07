@@ -12,14 +12,14 @@
       <div id="left">
         <div class="item item-1">
           <p class="top-name"><span>考核信息</span></p>
-          <p class="time-title"><span>考试已经结束</span></p>
+          <p class="time-title"><span>{{ quizItem?.isOver ? '考核已开始' : '考核已结束' }}</span></p>
           <div class="time-container">
-            <div class="time-box" style=";"><span class="time-num">{{ }}</span></div>
+            <div class="time-box" style=";"><span class="time-num">{{ quizItem?.isOver ? '考核已开始' : '' }}</span></div>
             <div class="time-box" style=";"><span class="time-num">天</span></div>
             <div class="time-box" style=";"><span class="time-num">{{ }}</span></div>
-            <div class="time-box" style=";"><span class="time-num">小时</span></div>
+            <div class="time-box" style=";"><span class="time-num">时</span></div>
             <div class="time-box" style=";"><span class="time-num">{{ }}</span></div>
-            <div class="time-box" style=";"><span class="time-num">分钟</span></div>
+            <div class="time-box" style=";"><span class="time-num">分</span></div>
             <div class="time-box" style=";"><span class="time-num">{{ }}</span></div>
             <div class="time-box" style=";"><span class="time-num">秒</span></div>
           </div>
@@ -31,23 +31,23 @@
               <div class="ivu-carousel-list">
                 <div class="ivu-carousel-track higher" :style="sliderStyles"
                   style="transition: transform 500ms;visibility: visible">
-                  <div class="ivu-carousel-item" v-for="item in quizItemExam" :key="item.title" :style="sliferItemStyles">
+                  <div class="ivu-carousel-item" v-for="paper in quizPaper" :key="paper.title" :style="sliferItemStyles">
                     <div class="res-topbar">
-                      <span>{{ item.title }}</span>
-                      <span>{{ }}</span>
+                      <span>{{ paper.title }}</span>
+                      <span>{{ paper.totalQuestion }}题/{{ paper.totalScore }}分</span>
                     </div>
                     <div class="res-box">
                       <div class="res-item">
                         <span>单选</span>
-                        <p>{{ }}题/{{ }}分</p>
+                        <p>{{ paper.simpleScore }}题/{{ paper.singleScore }}分</p>
                       </div>
                       <div class="res-item">
                         <span>多选</span>
-                        <p>{{ }}题/{{ }}分</p>
+                        <p>{{ paper.multipleScore }}题/{{ paper.singleScore }}分</p>
                       </div>
                       <div class="res-item">
                         <span>简答</span>
-                        <p>{{ }}题/{{ }}分</p>
+                        <p>{{ paper.blankScore }}题/{{ paper.singleScore }}分</p>
                       </div>
                     </div>
                   </div>
@@ -69,39 +69,39 @@
           <p class="top-name i2-top"><span>学员信息</span></p>
           <div class="i2">
             <div class="box">
-              <p class="num bg-lg-blue">{{ }}</p>
+              <p class="num bg-lg-blue">{{ quizStudent?.ought }}</p>
               <p class="title bg-lg-blue">应考人数</p>
             </div>
             <div class="box">
-              <p class="num bg-lg-cyan">{{ }}</p>
+              <p class="num bg-lg-cyan">{{ quizStudent?.in }}</p>
               <p class="title bg-lg-cyan">签到人数</p>
             </div>
             <div class="box">
-              <p class="num bg-lg-red">{{ }}</p>
+              <p class="num bg-lg-red">{{ quizStudent?.actual }}</p>
               <p class="title bg-lg-red">实考人数</p>
             </div>
             <div class="box">
-              <p class="num bg-lg-blue">{{ }}</p>
+              <p class="num bg-lg-blue">{{ quizStudent?.alloc }}</p>
               <p class="title bg-lg-blue">分配试卷</p>
             </div>
             <div class="box">
-              <p class="num bg-lg-cyan">{{ }}</p>
+              <p class="num bg-lg-cyan">{{ quizStudent?.answering }}</p>
               <p class="title bg-lg-cyan">答题中</p>
             </div>
             <div class="box">
-              <p class="num bg-lg-red">{{ }}</p>
+              <p class="num bg-lg-red">{{ quizStudent?.finished }}</p>
               <p class="title bg-lg-red">完成考试</p>
             </div>
             <div class="box">
-              <p class="num bg-lg-blue2">{{ }}</p>
+              <p class="num bg-lg-blue2">{{ quizStudent?.nin }}</p>
               <p class="title bg-lg-blue2">未签到</p>
             </div>
             <div class="box">
-              <p class="num bg-lg-cyan2">{{ }}</p>
+              <p class="num bg-lg-cyan2">{{ quizStudent?.absent }}</p>
               <p class="title bg-lg-cyan2">未考核</p>
             </div>
             <div class="box">
-              <p class="num bg-lg-red2">{{ }}</p>
+              <p class="num bg-lg-red2">{{ quizStudent?.passed }}</p>
               <p class="title bg-lg-red2">合格人数</p>
             </div>
           </div>
@@ -469,8 +469,6 @@ body {
 .ivu-carousel-track.higher {
   z-index: 2;
   top: 0;
-
-  /* animation: slideAnimation 10s infinite linear; */
 }
 
 .ivu-carousel-item {
@@ -479,20 +477,6 @@ body {
   min-height: 1px;
   display: block
 }
-
-/* @keyframes slideAnimation {
-  0% {
-    transform: translate3d(0, 0, 0);
-  }
-
-  50% {
-    transform: translate3d(-100%, 0, 0);
-  }
-
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-} */
 
 .ivu-carousel-arrow {
   border: none;
@@ -547,7 +531,8 @@ body {
 .ivu-icon {
   display: inline-block;
   font-family: Ionicons;
-  speak: none;
+  -webkit-speak: none;
+  /* 防止元素被屏幕阅读器朗读 */
   font-style: normal;
   font-weight: 400;
   font-variant: normal;
@@ -688,6 +673,123 @@ body {
 <script setup lang="ts">
 import * as echarts from 'echarts';
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import axios from 'axios';
+interface DataRes {
+  /*编码 0表示成功，其他值表示失败 */
+  code: number;
+
+  /*消息内容 */
+  msg: string;
+
+  /*响应数据 */
+  data: {
+    /*考核名称 */
+    titles: Record<string, unknown>[];
+
+    /* */
+    quizCity: {
+      /*城市名称 */
+      cities: Record<string, unknown>[];
+
+      /*应考人数 */
+      ought: Record<string, unknown>[];
+
+      /*实考人数 */
+      actual: Record<string, unknown>[];
+
+      /*完成考核 */
+      finished: Record<string, unknown>[];
+
+      /*合格人数 */
+      passed: Record<string, unknown>[];
+
+      /*不合格人数 */
+      failed: Record<string, unknown>[];
+
+      /*未考人数 */
+      absent: Record<string, unknown>[];
+    };
+
+    /* */
+    quizItem: {
+      /*是否结束 */
+      isOver: number;
+
+      /*结束日期 */
+      endTime: string;
+
+      /*考卷信息结果集 */
+      quizPaper: {
+        /*考卷名称 */
+        title: string;
+
+        /*单选题数 */
+        simpleScore: number;
+
+        /*多选题数 */
+        multipleScore: number;
+
+        /*填空题数 */
+        blankScore: number;
+
+        /*每题分值(上三种题型数相加即为总题数，对应乘分值相加即为总分值) */
+        singleScore: number;
+
+        /*总提数 */
+        totalQuestion: number;
+
+        /*总分 */
+        totalScore: number;
+      }[];
+    };
+
+    /* */
+    quizStudent: {
+      /*总应考人数 */
+      ought: number;
+
+      /*分配试卷 */
+      alloc: number;
+
+      /*未签到 */
+      nin: number;
+
+      /*签到人数 */
+      in: number;
+
+      /*答题中 */
+      answering: number;
+
+      /*未考核 */
+      absent: number;
+
+      /*实考人数 */
+      actual: number;
+
+      /*总完成考试 */
+      finished: number;
+
+      /*总合格人数 */
+      passed: number;
+    };
+  }[];
+}
+
+const request = axios.create({
+  baseURL: 'https://localhost:8080/quiz/data', // 替换为您的 API 基础 URL
+});
+const currentSlide = ref(0);
+const quizData = ref<DataRes['data'][0] | null>(null);
+const quizTitle = quizData.value?.titles;
+//地区考核信息结果集
+const quizCity = quizData.value?.quizCity;
+//考核信息结果集
+const quizItem = quizData.value?.quizItem;
+const endDate = new Date(quizItem!.endTime)
+//考核分卷信息结果集
+const quizPaper = quizItem?.quizPaper
+//学员信息结果集
+const quizStudent = quizData.value?.quizStudent;
 const labelOption = {
   show: true,
   position: 'insideBottom',
@@ -719,7 +821,7 @@ const option1 = {
     {
       type: 'category',
       axisTick: { show: false },
-      data: ['南京市', '徐州市', '苏州市', '南通市', '扬州市']
+      data: `${quizCity?.cities}`
     }
   ],
   yAxis: [
@@ -736,7 +838,7 @@ const option1 = {
       emphasis: {
         focus: 'series'
       },
-      data: [320, 332, 301, 334, 390]
+      data: `${quizCity?.ought}`
     },
     {
       name: '实考人数',
@@ -745,7 +847,7 @@ const option1 = {
       emphasis: {
         focus: 'series'
       },
-      data: [220, 182, 191, 234, 290]
+      data: `${quizCity?.actual}`
     },
     {
       name: '完成考核',
@@ -754,7 +856,7 @@ const option1 = {
       emphasis: {
         focus: 'series'
       },
-      data: [150, 232, 201, 154, 190]
+      data: `${quizCity?.finished}`
     }
   ]
 };
@@ -776,7 +878,7 @@ const option2 = {
     {
       type: 'category',
       axisTick: { show: false },
-      data: ['南京市', '徐州市', '苏州市', '南通市', '扬州市']
+      data: `${quizCity?.cities}`
     }
   ],
   yAxis: [
@@ -793,7 +895,7 @@ const option2 = {
       emphasis: {
         focus: 'series'
       },
-      data: [320, 332, 301, 334, 390]
+      data: `${quizCity?.passed}`
     },
     {
       name: '不合格人数',
@@ -802,7 +904,7 @@ const option2 = {
       emphasis: {
         focus: 'series'
       },
-      data: [220, 182, 191, 234, 290]
+      data: `${quizCity?.failed}`
     },
     {
       name: '未考人数',
@@ -811,45 +913,31 @@ const option2 = {
       emphasis: {
         focus: 'series'
       },
-      data: [150, 232, 201, 154, 190]
+      data: `${quizCity?.absent}`
     }
   ]
 };
 
-const quizCount = ref(1);
-// const quizItemExamCount = ref(1);
-const currentSlide = ref(0);
-//考核分卷信息结果集
-const quizItemExam = ref([
-  {
-    title: '1'
-  },
-  {
-    title: '2'
-  },
-  {
-    title: '3'
-  }
-])
+
 const sliderStyles = computed(() => {
   return {
-    width: `${quizItemExam.value.length * 100}%`,
-    transform: `translate3d(-${currentSlide.value * 100 / quizItemExam.value.length}%, 0px, 0px)`,
+    width: `${quizPaper!.length * 100}%`,
+    transform: `translate3d(-${currentSlide.value * 100 / quizPaper!.length}%, 0px, 0px)`,
   }
 })
 const sliferItemStyles = computed(() => {
   return {
-    width: `${100 / quizItemExam.value.length}%`,
+    width: `${100 / quizPaper!.length}%`,
     height: 'auto',
     left: '0px'
   }
 })
 const nextSlide = () => {
-  currentSlide.value = (currentSlide.value + 1) % quizItemExam.value.length;
+  currentSlide.value = (currentSlide.value + 1) % quizPaper!.length;
 };
 
 const prevSlide = () => {
-  currentSlide.value = (currentSlide.value - 1 + quizItemExam.value.length) % quizItemExam.value.length;
+  currentSlide.value = (currentSlide.value - 1 + quizPaper!.length) % quizPaper!.length;
 };
 // 明确指定 intervalId 的类型为 number
 let intervalId: number | undefined = undefined;
@@ -864,6 +952,15 @@ const stopAutoPlay = () => {
   clearInterval(intervalId);
 };
 onMounted(() => {
+  async () => {
+    try {
+      const response = await request.post<DataRes>('/quiz/data');
+      quizData.value = response.data.data[0];
+    } catch (error) {
+      // 请求失败，处理错误
+      console.error('请求失败:', error);
+    }
+  };
   startAutoPlay();
   let chartDom1 = document.getElementById('msg1');
   let chartDom2 = document.getElementById('msg2');
