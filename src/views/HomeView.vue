@@ -25,13 +25,33 @@
           </div>
           <div class="result">
             <div class="ivu-carousel" style="height: 100%;">
-              <button type="button" class="left ivu-carousel-arrow ivu-carousel-arrow-hover">
+              <button @click="prevSlide" type="button" class="left ivu-carousel-arrow ivu-carousel-arrow-hover">
                 <i class="ivu-icon ivu-icon-ios-arrow-back"></i>
               </button>
               <div class="ivu-carousel-list">
-                <div class="ivu-carousel-track higher"
-                  style="width: 200%; transform: translate3d(0px, 0px, 0px); transition: transform 500ms; visibility: visible;">
-                  <div class="ivu-carousel-item" style="width: 50%; height: auto; left: 0px;">
+                <div class="ivu-carousel-track higher" :style="sliderStyles"
+                  style="transition: transform 500ms;visibility: visible">
+                  <div class="ivu-carousel-item" v-for="item in quizItemExam" :key="item.title" :style="sliferItemStyles">
+                    <div class="res-topbar">
+                      <span>{{ item.title }}</span>
+                      <span>{{ }}</span>
+                    </div>
+                    <div class="res-box">
+                      <div class="res-item">
+                        <span>单选</span>
+                        <p>{{ }}题/{{ }}分</p>
+                      </div>
+                      <div class="res-item">
+                        <span>多选</span>
+                        <p>{{ }}题/{{ }}分</p>
+                      </div>
+                      <div class="res-item">
+                        <span>简答</span>
+                        <p>{{ }}题/{{ }}分</p>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <div class="ivu-carousel-item" style="width: 50%; height: auto; left: 0px;">
                     <div class="res-topbar">
                       <span>{{ }}</span>
                       <span>{{ }}</span>
@@ -50,30 +70,10 @@
                         <p>{{ }}题/{{ }}分</p>
                       </div>
                     </div>
-                  </div>
-                  <div class="ivu-carousel-item" style="width: 50%; height: auto; left: 0px;">
-                    <div class="res-topbar">
-                      <span>{{ }}</span>
-                      <span>{{ }}</span>
-                    </div>
-                    <div class="res-box">
-                      <div class="res-item">
-                        <span>单选</span>
-                        <p>{{ }}题/{{ }}分</p>
-                      </div>
-                      <div class="res-item">
-                        <span>多选</span>
-                        <p>{{ }}题/{{ }}分</p>
-                      </div>
-                      <div class="res-item">
-                        <span>简答</span>
-                        <p>{{ }}题/{{ }}分</p>
-                      </div>
-                    </div>
-                  </div>
+                  </div> -->
                 </div>
               </div>
-              <button type="button" class="right ivu-carousel-arrow ivu-carousel-arrow-hover">
+              <button @click="nextSlide" type="button" class="right ivu-carousel-arrow ivu-carousel-arrow-hover">
                 <i class="ivu-icon ivu-icon-ios-arrow-forward"></i>
               </button>
               <ul class="ivu-carousel-dots ivu-carousel-dots-none">
@@ -691,7 +691,7 @@ body {
 </style>
 <script setup lang="ts">
 import * as echarts from 'echarts';
-import { onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 const labelOption = {
   show: true,
   position: 'insideBottom',
@@ -818,6 +818,39 @@ const option2 = {
       data: [150, 232, 201, 154, 190]
     }
   ]
+};
+
+const quizCount = ref(1);
+// const quizItemExamCount = ref(1);
+const currentSlide = ref(0);
+//考核分卷信息结果集
+const quizItemExam = ref([
+  {
+    title: '1'
+  },
+  {
+    title: '2'
+  }
+])
+const sliderStyles = computed(() => {
+  return {
+    width: `${quizItemExam.value.length * 100}%`,
+    transform: `translate3d(-${currentSlide.value * 100 / quizItemExam.value.length}%, 0px, 0px)`,
+  }
+})
+const sliferItemStyles = computed(() => {
+  return {
+    width: `${100 / quizItemExam.value.length}%`,
+    height: 'auto',
+    left: '0px'
+  }
+})
+const nextSlide = () => {
+  currentSlide.value = (currentSlide.value + 1) % quizItemExam.value.length;
+};
+
+const prevSlide = () => {
+  currentSlide.value = (currentSlide.value - 1 + quizItemExam.value.length) % quizItemExam.value.length;
 };
 onMounted(() => {
   let chartDom1 = document.getElementById('msg1');
