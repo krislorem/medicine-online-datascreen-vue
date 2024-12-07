@@ -51,26 +51,6 @@
                       </div>
                     </div>
                   </div>
-                  <!-- <div class="ivu-carousel-item" style="width: 50%; height: auto; left: 0px;">
-                    <div class="res-topbar">
-                      <span>{{ }}</span>
-                      <span>{{ }}</span>
-                    </div>
-                    <div class="res-box">
-                      <div class="res-item">
-                        <span>单选</span>
-                        <p>{{ }}题/{{ }}分</p>
-                      </div>
-                      <div class="res-item">
-                        <span>多选</span>
-                        <p>{{ }}题/{{ }}分</p>
-                      </div>
-                      <div class="res-item">
-                        <span>简答</span>
-                        <p>{{ }}题/{{ }}分</p>
-                      </div>
-                    </div>
-                  </div> -->
                 </div>
               </div>
               <button @click="nextSlide" type="button" class="right ivu-carousel-arrow ivu-carousel-arrow-hover">
@@ -488,7 +468,9 @@ body {
 
 .ivu-carousel-track.higher {
   z-index: 2;
-  top: 0
+  top: 0;
+
+  /* animation: slideAnimation 10s infinite linear; */
 }
 
 .ivu-carousel-item {
@@ -497,6 +479,20 @@ body {
   min-height: 1px;
   display: block
 }
+
+/* @keyframes slideAnimation {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(-100%, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+} */
 
 .ivu-carousel-arrow {
   border: none;
@@ -691,7 +687,7 @@ body {
 </style>
 <script setup lang="ts">
 import * as echarts from 'echarts';
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 const labelOption = {
   show: true,
   position: 'insideBottom',
@@ -830,6 +826,9 @@ const quizItemExam = ref([
   },
   {
     title: '2'
+  },
+  {
+    title: '3'
   }
 ])
 const sliderStyles = computed(() => {
@@ -852,7 +851,20 @@ const nextSlide = () => {
 const prevSlide = () => {
   currentSlide.value = (currentSlide.value - 1 + quizItemExam.value.length) % quizItemExam.value.length;
 };
+// 明确指定 intervalId 的类型为 number
+let intervalId: number | undefined = undefined;
+
+// 开始自动播放
+const startAutoPlay = () => {
+  intervalId = setInterval(nextSlide, 2000); // 每3秒切换到下一张幻灯片
+};
+
+// 停止自动播放
+const stopAutoPlay = () => {
+  clearInterval(intervalId);
+};
 onMounted(() => {
+  startAutoPlay();
   let chartDom1 = document.getElementById('msg1');
   let chartDom2 = document.getElementById('msg2');
   let myChart1 = echarts.init(chartDom1);
@@ -860,7 +872,8 @@ onMounted(() => {
   option1 && myChart1.setOption(option1);
   option2 && myChart2.setOption(option2);
 })
-
-
+onUnmounted(() => {
+  stopAutoPlay();
+});
 </script>
 
