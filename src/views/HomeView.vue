@@ -65,7 +65,6 @@
                 </li>
               </ul>
             </div>
-
           </div>
         </div>
         <div class="item item-2">
@@ -757,7 +756,7 @@ const examGroups = ref<Data[]>(
     {
       "name": "202级专题冬季考试",
       "start": 1,
-      "end": "2022-11-01T00:00:00",
+      "end": "2025-11-01T00:00:00",
       "paperInfoList": [
         {
           "paper": "B卷",
