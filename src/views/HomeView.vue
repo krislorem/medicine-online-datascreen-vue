@@ -4,23 +4,26 @@
       <h1>中医在线考核可视化大屏</h1>
     </nav>
     <div id="mid-bar">
-      <select id="info">
-        <option>0515-test</option>
+      <select id="info" v-model="selectedExamName">
+        <option v-for="(exam, index) in examGroups" :key="index" :value="exam.name">
+          {{ exam.name }}
+        </option>
       </select>
     </div>
     <div id="all-info">
       <div id="left">
         <div class="item item-1">
           <p class="top-name"><span>考核信息</span></p>
-          <p class="time-title"><span>{{ quizItem?.isOver ? '考核已开始' : '考核已结束' }}</span></p>
-          <div class="time-container">
-            <div class="time-box" style=";"><span class="time-num">{{ quizItem?.isOver ? '考核已开始' : '' }}</span></div>
+          <p class="time-title"><span>{{ selectedExam?.start && (new Date(selectedExam.end) > new Date()) ?
+            '考核已开始' : '考核已结束' }}</span></p>
+          <div v-if="selectedExam?.start && (new Date(selectedExam.end) > new Date())" class="time-container">
+            <div class="time-box" style=";"><span class="time-num">{{ countdown.days }}</span></div>
             <div class="time-box" style=";"><span class="time-num">天</span></div>
-            <div class="time-box" style=";"><span class="time-num">{{ }}</span></div>
+            <div class="time-box" style=";"><span class="time-num">{{ countdown.hours }}</span></div>
             <div class="time-box" style=";"><span class="time-num">时</span></div>
-            <div class="time-box" style=";"><span class="time-num">{{ }}</span></div>
+            <div class="time-box" style=";"><span class="time-num">{{ countdown.minutes }}</span></div>
             <div class="time-box" style=";"><span class="time-num">分</span></div>
-            <div class="time-box" style=";"><span class="time-num">{{ }}</span></div>
+            <div class="time-box" style=";"><span class="time-num">{{ countdown.seconds }}</span></div>
             <div class="time-box" style=";"><span class="time-num">秒</span></div>
           </div>
           <div class="result">
@@ -31,23 +34,23 @@
               <div class="ivu-carousel-list">
                 <div class="ivu-carousel-track higher" :style="sliderStyles"
                   style="transition: transform 500ms;visibility: visible">
-                  <div class="ivu-carousel-item" v-for="paper in quizPaper" :key="paper.title" :style="sliferItemStyles">
+                  <div class="ivu-carousel-item" v-for="item in selectedExam?.paperInfoList" :style="sliferItemStyles">
                     <div class="res-topbar">
-                      <span>{{ paper.title }}</span>
-                      <span>{{ paper.totalQuestion }}题/{{ paper.totalScore }}分</span>
+                      <span>{{ item.paper }}</span>
+                      <span>{{ item.totalN }}题/{{ item.totalS }}分</span>
                     </div>
                     <div class="res-box">
                       <div class="res-item">
                         <span>单选</span>
-                        <p>{{ paper.simpleScore }}题/{{ paper.singleScore }}分</p>
+                        <p>{{ item.sin }}题/{{ item.sinN }}分</p>
                       </div>
                       <div class="res-item">
                         <span>多选</span>
-                        <p>{{ paper.multipleScore }}题/{{ paper.singleScore }}分</p>
+                        <p>{{ item.mul }}题/{{ item.mulN }}分</p>
                       </div>
                       <div class="res-item">
                         <span>简答</span>
-                        <p>{{ paper.blankScore }}题/{{ paper.singleScore }}分</p>
+                        <p>{{ item.blank }}题/{{ item.blankN }}分</p>
                       </div>
                     </div>
                   </div>
@@ -69,39 +72,43 @@
           <p class="top-name i2-top"><span>学员信息</span></p>
           <div class="i2">
             <div class="box">
-              <p class="num bg-lg-blue">{{ quizStudent?.ought }}</p>
+              <p class="num bg-lg-blue">{{ selectedExam?.studentInfo.studentCount }}</p>
               <p class="title bg-lg-blue">应考人数</p>
             </div>
             <div class="box">
-              <p class="num bg-lg-cyan">{{ quizStudent?.in }}</p>
+              <p class="num bg-lg-cyan">{{ selectedExam!.studentInfo.finishCountMap['0'] +
+                selectedExam!.studentInfo.finishCountMap['1'] }}</p>
               <p class="title bg-lg-cyan">签到人数</p>
             </div>
             <div class="box">
-              <p class="num bg-lg-red">{{ quizStudent?.actual }}</p>
+              <p class="num bg-lg-red">{{ selectedExam!.studentInfo.finishCountMap['0'] +
+                selectedExam!.studentInfo.finishCountMap['1'] }}</p>
               <p class="title bg-lg-red">实考人数</p>
             </div>
             <div class="box">
-              <p class="num bg-lg-blue">{{ quizStudent?.alloc }}</p>
+              <p class="num bg-lg-blue">{{ selectedExam!.studentInfo.paperCount }}</p>
               <p class="title bg-lg-blue">分配试卷</p>
             </div>
             <div class="box">
-              <p class="num bg-lg-cyan">{{ quizStudent?.answering }}</p>
+              <p class="num bg-lg-cyan">{{ selectedExam!.studentInfo.gradeCountMap['1'] }}</p>
               <p class="title bg-lg-cyan">答题中</p>
             </div>
             <div class="box">
-              <p class="num bg-lg-red">{{ quizStudent?.finished }}</p>
+              <p class="num bg-lg-red">{{ selectedExam!.studentInfo.finishCountMap['1'] }}</p>
               <p class="title bg-lg-red">完成考试</p>
             </div>
             <div class="box">
-              <p class="num bg-lg-blue2">{{ quizStudent?.nin }}</p>
+              <p class="num bg-lg-blue2">{{ selectedExam!.studentInfo.studentCount -
+                selectedExam!.studentInfo.finishCountMap['0'] + selectedExam!.studentInfo.finishCountMap['1'] }}</p>
               <p class="title bg-lg-blue2">未签到</p>
             </div>
             <div class="box">
-              <p class="num bg-lg-cyan2">{{ quizStudent?.absent }}</p>
+              <p class="num bg-lg-cyan2">{{ selectedExam!.studentInfo.studentCount -
+                selectedExam!.studentInfo.finishCountMap['0'] + selectedExam!.studentInfo.finishCountMap['1'] }}</p>
               <p class="title bg-lg-cyan2">未考核</p>
             </div>
             <div class="box">
-              <p class="num bg-lg-red2">{{ quizStudent?.passed }}</p>
+              <p class="num bg-lg-red2">{{ selectedExam!.studentInfo.gradeCountMap['3'] }}</p>
               <p class="title bg-lg-red2">合格人数</p>
             </div>
           </div>
@@ -672,124 +679,431 @@ body {
 </style>
 <script setup lang="ts">
 import * as echarts from 'echarts';
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, watch, nextTick, computed, onMounted, onUnmounted } from 'vue'
 import axios from 'axios';
-interface DataRes {
-  /*编码 0表示成功，其他值表示失败 */
-  code: number;
+interface Data {
+  /*考试标题 */
+  name: string;
 
-  /*消息内容 */
-  msg: string;
+  /*是否开始 */
+  start: number;
 
-  /*响应数据 */
-  data: {
-    /*考核名称 */
-    titles: Record<string, unknown>[];
+  /*结束时间 */
+  end: string;
 
-    /* */
-    quizCity: {
-      /*城市名称 */
-      cities: Record<string, unknown>[];
+  /*考卷信息列表 */
+  paperInfoList: {
+    /*考卷名 */
+    paper: string;
 
-      /*应考人数 */
-      ought: Record<string, unknown>[];
+    /*单选分值 */
+    sin: number;
 
-      /*实考人数 */
-      actual: Record<string, unknown>[];
+    /*多选分值 */
+    mul: number;
 
-      /*完成考核 */
-      finished: Record<string, unknown>[];
+    /*填空分值 */
+    blank: number;
 
-      /*合格人数 */
-      passed: Record<string, unknown>[];
+    /*单选数 */
+    sinN: number;
 
-      /*不合格人数 */
-      failed: Record<string, unknown>[];
+    /*多选数 */
+    mulN: number;
 
-      /*未考人数 */
-      absent: Record<string, unknown>[];
-    };
+    /*填空数 */
+    blankN: number;
 
-    /* */
-    quizItem: {
-      /*是否结束 */
-      isOver: number;
+    /*总题数 */
+    totalN: number;
 
-      /*结束日期 */
-      endTime: string;
-
-      /*考卷信息结果集 */
-      quizPaper: {
-        /*考卷名称 */
-        title: string;
-
-        /*单选题数 */
-        simpleScore: number;
-
-        /*多选题数 */
-        multipleScore: number;
-
-        /*填空题数 */
-        blankScore: number;
-
-        /*每题分值(上三种题型数相加即为总题数，对应乘分值相加即为总分值) */
-        singleScore: number;
-
-        /*总提数 */
-        totalQuestion: number;
-
-        /*总分 */
-        totalScore: number;
-      }[];
-    };
-
-    /* */
-    quizStudent: {
-      /*总应考人数 */
-      ought: number;
-
-      /*分配试卷 */
-      alloc: number;
-
-      /*未签到 */
-      nin: number;
-
-      /*签到人数 */
-      in: number;
-
-      /*答题中 */
-      answering: number;
-
-      /*未考核 */
-      absent: number;
-
-      /*实考人数 */
-      actual: number;
-
-      /*总完成考试 */
-      finished: number;
-
-      /*总合格人数 */
-      passed: number;
-    };
+    /*总分 */
+    totalS: number;
   }[];
+  /* 学员信息 */
+  studentInfo: {
+    /*学员数量 */
+    studentCount: number;
+
+    /*考卷数量 */
+    paperCount: number;
+
+    /*是否完成数量映射 */
+    finishCountMap: Record<string, number>;
+
+    /*学员成绩数量映射 */
+    gradeCountMap: Record<string, number>;
+  };
+
+  /*地区信息列表 */
+  regionInfoList: {
+    /*地区名称 */
+    city: string;
+
+    /*学员数量 */
+    studentCount: number;
+
+    /*是否完成数量映射 */
+    finishCountMap: Record<string, number>;
+
+    /*学员成绩数量映射 */
+    gradeCountMap: Record<string, number>;
+  }[];
+};
+
+// 创建一个响应式变量来存储数据
+const examGroups = ref<Data[]>(
+  [
+    {
+      "name": "202级专题冬季考试",
+      "start": 1,
+      "end": "2022-11-01T00:00:00",
+      "paperInfoList": [
+        {
+          "paper": "B卷",
+          "sin": 1,
+          "mul": 2,
+          "blank": 3,
+          "sinN": 1,
+          "mulN": 1,
+          "blankN": 1,
+          "totalN": 3,
+          "totalS": 6
+        }
+      ],
+      "studentInfo": {
+        "studentCount": 2243,
+        "paperCount": 1,
+        "finishCountMap": {
+          "0": 2243,
+          "1": 0
+        },
+        "gradeCountMap": {
+          "0": 8,
+          "1": 0,
+          "2": 96,
+          "3": 2139
+        }
+      },
+      "regionInfoList": [
+        {
+          "city": "宿迁市",
+          "studentCount": 351,
+          "finishCountMap": {
+            "0": 350,
+            "1": 0
+          },
+          "gradeCountMap": {
+            "0": 1,
+            "1": 0,
+            "2": 5,
+            "3": 344
+          }
+        },
+        {
+          "city": "镇江市",
+          "studentCount": 148,
+          "finishCountMap": {
+            "0": 147,
+            "1": 0
+          },
+          "gradeCountMap": {
+            "0": 0,
+            "1": 0,
+            "2": 3,
+            "3": 144
+          }
+        },
+        {
+          "city": "无锡市",
+          "studentCount": 146,
+          "finishCountMap": {
+            "0": 145,
+            "1": 0
+          },
+          "gradeCountMap": {
+            "0": 0,
+            "1": 0,
+            "2": 15,
+            "3": 130
+          }
+        },
+        {
+          "city": "扬州市",
+          "studentCount": 151,
+          "finishCountMap": {
+            "0": 150,
+            "1": 0
+          },
+          "gradeCountMap": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 150
+          }
+        },
+        {
+          "city": "淮安市",
+          "studentCount": 156,
+          "finishCountMap": {
+            "0": 155,
+            "1": 0
+          },
+          "gradeCountMap": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 155
+          }
+        },
+        {
+          "city": "常州市",
+          "studentCount": 177,
+          "finishCountMap": {
+            "0": 176,
+            "1": 0
+          },
+          "gradeCountMap": {
+            "0": 1,
+            "1": 0,
+            "2": 6,
+            "3": 169
+          }
+        },
+        {
+          "city": "南京市",
+          "studentCount": 145,
+          "finishCountMap": {
+            "0": 144,
+            "1": 0
+          },
+          "gradeCountMap": {
+            "0": 0,
+            "1": 0,
+            "2": 21,
+            "3": 123
+          }
+        },
+        {
+          "city": "南通市",
+          "studentCount": 157,
+          "finishCountMap": {
+            "0": 156,
+            "1": 0
+          },
+          "gradeCountMap": {
+            "0": 0,
+            "1": 0,
+            "2": 30,
+            "3": 126
+          }
+        },
+        {
+          "city": "苏州市",
+          "studentCount": 150,
+          "finishCountMap": {
+            "0": 149,
+            "1": 0
+          },
+          "gradeCountMap": {
+            "0": 0,
+            "1": 0,
+            "2": 7,
+            "3": 142
+          }
+        },
+        {
+          "city": "连云港市",
+          "studentCount": 207,
+          "finishCountMap": {
+            "0": 206,
+            "1": 0
+          },
+          "gradeCountMap": {
+            "0": 0,
+            "1": 0,
+            "2": 9,
+            "3": 197
+          }
+        },
+        {
+          "city": "盐城市",
+          "studentCount": 151,
+          "finishCountMap": {
+            "0": 150,
+            "1": 0
+          },
+          "gradeCountMap": {
+            "0": 1,
+            "1": 0,
+            "2": 0,
+            "3": 149
+          }
+        },
+        {
+          "city": "徐州市",
+          "studentCount": 152,
+          "finishCountMap": {
+            "0": 151,
+            "1": 0
+          },
+          "gradeCountMap": {
+            "0": 3,
+            "1": 0,
+            "2": 0,
+            "3": 148
+          }
+        },
+        {
+          "city": "泰州市",
+          "studentCount": 165,
+          "finishCountMap": {
+            "0": 164,
+            "1": 0
+          },
+          "gradeCountMap": {
+            "0": 2,
+            "1": 0,
+            "2": 0,
+            "3": 162
+          }
+        }
+      ]
+    }
+  ]
+);
+
+// selectedExamName用于v-model绑定，存储选中的考试名称
+const selectedExamName = ref(examGroups.value.length > 0 ? examGroups.value[0].name : '');
+
+// 如果需要根据选中的考试名称获取对应的对象，可以这样操作
+const selectedExam = ref(examGroups.value.find(exam => exam.name === selectedExamName.value) || null);
+//异步更新
+watch(examGroups, (newValue) => {
+  // 等待DOM更新
+  nextTick(() => {
+    // 现在可以安全地访问更新后的DOM
+    selectedExamName.value = newValue.length > 0 ? newValue[0].name : ''
+    selectedExam.value = newValue.find(exam => exam.name === selectedExamName.value) || null
+  });
+});
+const countdown = ref({
+  days: 0,
+  hours: 0,
+  minutes: 0,
+  seconds: 0,
+});
+
+function updateCountdown() {
+  const endTime = new Date(selectedExam!.value!.end).getTime();
+  const now = new Date().getTime();
+  const diff = endTime - now;
+
+  if (diff < 0) {
+    countdown.value = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+  } else {
+    countdown.value = {
+      days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+      minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+      seconds: Math.floor((diff % (1000 * 60)) / 1000),
+    };
+  }
 }
 
-const request = axios.create({
-  baseURL: 'https://localhost:8080/quiz/data', // 替换为您的 API 基础 URL
+// 立即更新一次倒计时，然后每秒钟更新一次
+updateCountdown();
+const tIntervalId = setInterval(updateCountdown, 1000);
+
+onUnmounted(() => {
+  clearInterval(tIntervalId); // 组件卸载时清除定时器
 });
 const currentSlide = ref(0);
-const quizData = ref<DataRes['data'][0] | null>(null);
-const quizTitle = quizData.value?.titles;
-//地区考核信息结果集
-const quizCity = quizData.value?.quizCity;
-//考核信息结果集
-const quizItem = quizData.value?.quizItem;
-const endDate = new Date(quizItem!.endTime)
-//考核分卷信息结果集
-const quizPaper = quizItem?.quizPaper
-//学员信息结果集
-const quizStudent = quizData.value?.quizStudent;
+// 使用 computed 创建一个响应式的 citiesArray
+const citiesArray = computed(() => {
+  const allCities = new Set(); // 使用 Set 来自动去重
+  examGroups.value.forEach(exam => {
+    exam.regionInfoList.forEach(region => {
+      allCities.add(region.city);
+    });
+  });
+  return Array.from(allCities); // 将 Set 转换为数组
+});
+// 使用 computed 创建一个响应式的数组，包含所有城市的 studentCount
+const allStudentCounts = computed(() => {
+  return examGroups.value.flatMap(exam =>
+    exam.regionInfoList.map(region => region.studentCount)
+  );
+});
+
+// 使用 computed 创建两个响应式的数组，分别包含所有 finishCountMap 中键为 '0' 和 '1' 的值
+const finishCounts = computed(() => {
+  // 初始化两个空数组用于收集 finishCountMap 中键为 '0' 和 '1' 的值
+  const countsZero: any[] = [];
+  const countsOne: any[] = [];
+
+  examGroups.value.forEach(exam => {
+    // 检查 regionInfoList 是否存在
+    if (exam.regionInfoList) {
+      // 遍历 regionInfoList
+      exam.regionInfoList.forEach(region => {
+        // 检查 finishCountMap 是否存在
+        if (region.finishCountMap) {
+          // 添加 finishCountMap 中键为 '0' 的值到 countsZero 数组
+          if (region.finishCountMap['0'] !== undefined && region.finishCountMap['0'] !== null) {
+            countsZero.push(region.finishCountMap['0']);
+          }
+          // 添加 finishCountMap 中键为 '1' 的值到 countsOne 数组
+          if (region.finishCountMap['1'] !== undefined && region.finishCountMap['1'] !== null) {
+            countsOne.push(region.finishCountMap['1']);
+          }
+        }
+      });
+    }
+  });
+
+  // 返回包含所有 finishCountMap 中键为 '0' 和 '1' 的值的数组
+  return { countsZero, countsOne };
+});
+// 创建一个计算属性，它依赖于两个响应式数组
+const sumArray = computed(() => {
+  return finishCounts.value.countsOne.map((value, index) => value + finishCounts.value.countsZero[index]);
+});
+const minusArray = computed(() => {
+  return allStudentCounts.value.map((value, index) => value - sumArray.value[index])
+})
+// 使用 computed 创建四个响应式的数组，分别包含所有 gradeCountMap 中键为 '0', '1', '2', '3' 的值
+const gradeCounts = computed(() => {
+  // 初始化四个空数组用于收集 gradeCountMap 中特定键的值
+  const gradeCounts: any = {
+    '0': [],
+    '1': [],
+    '2': [],
+    '3': []
+  };
+
+  examGroups.value.forEach(exam => {
+    // 检查 regionInfoList 是否存在
+    if (exam.regionInfoList) {
+      // 遍历 regionInfoList
+      exam.regionInfoList.forEach(region => {
+        // 检查 gradeCountMap 是否存在
+        if (region.gradeCountMap) {
+          // 遍历 gradeCountMap 中的特定键
+          Object.keys(gradeCounts).forEach(key => {
+            if (region.gradeCountMap[key] !== undefined && region.gradeCountMap[key] !== null) {
+              // 将 gradeCountMap 中特定键的值添加到对应的数组中
+              gradeCounts[key].push(region.gradeCountMap[key]);
+            }
+          });
+        }
+      });
+    }
+  });
+
+  // 返回包含所有 gradeCountMap 中特定键的值的数组
+  return gradeCounts;
+});
 const labelOption = {
   show: true,
   position: 'insideBottom',
@@ -821,7 +1135,7 @@ const option1 = {
     {
       type: 'category',
       axisTick: { show: false },
-      data: `${quizCity?.cities}`
+      data: citiesArray.value
     }
   ],
   yAxis: [
@@ -838,7 +1152,7 @@ const option1 = {
       emphasis: {
         focus: 'series'
       },
-      data: `${quizCity?.ought}`
+      data: allStudentCounts.value
     },
     {
       name: '实考人数',
@@ -847,7 +1161,7 @@ const option1 = {
       emphasis: {
         focus: 'series'
       },
-      data: `${quizCity?.actual}`
+      data: sumArray.value
     },
     {
       name: '完成考核',
@@ -856,7 +1170,7 @@ const option1 = {
       emphasis: {
         focus: 'series'
       },
-      data: `${quizCity?.finished}`
+      data: finishCounts.value.countsOne
     }
   ]
 };
@@ -878,7 +1192,7 @@ const option2 = {
     {
       type: 'category',
       axisTick: { show: false },
-      data: `${quizCity?.cities}`
+      data: citiesArray.value
     }
   ],
   yAxis: [
@@ -895,7 +1209,7 @@ const option2 = {
       emphasis: {
         focus: 'series'
       },
-      data: `${quizCity?.passed}`
+      data: gradeCounts.value['3']
     },
     {
       name: '不合格人数',
@@ -904,7 +1218,7 @@ const option2 = {
       emphasis: {
         focus: 'series'
       },
-      data: `${quizCity?.failed}`
+      data: gradeCounts.value['2']
     },
     {
       name: '未考人数',
@@ -913,61 +1227,77 @@ const option2 = {
       emphasis: {
         focus: 'series'
       },
-      data: `${quizCity?.absent}`
+      data: minusArray.value
     }
   ]
 };
 
-
+const wl = computed(() => selectedExam.value!.paperInfoList.length)
 const sliderStyles = computed(() => {
   return {
-    width: `${quizPaper!.length * 100}%`,
-    transform: `translate3d(-${currentSlide.value * 100 / quizPaper!.length}%, 0px, 0px)`,
+    width: `${wl.value * 100}%`,
+    transform: `translate3d(-${currentSlide.value * 100 / wl.value}%, 0px, 0px)`,
   }
 })
 const sliferItemStyles = computed(() => {
   return {
-    width: `${100 / quizPaper!.length}%`,
+    width: `${100 / wl.value}%`,
     height: 'auto',
     left: '0px'
   }
 })
 const nextSlide = () => {
-  currentSlide.value = (currentSlide.value + 1) % quizPaper!.length;
+  currentSlide.value = (currentSlide.value + 1) % 2;
 };
 
 const prevSlide = () => {
-  currentSlide.value = (currentSlide.value - 1 + quizPaper!.length) % quizPaper!.length;
+  currentSlide.value = (currentSlide.value - 1 + 2) % 2;
 };
-// 明确指定 intervalId 的类型为 number
-let intervalId: number | undefined = undefined;
+const intervalId = ref<number | undefined>(0); // 用于存储定时器ID
 
+// 控制自动播放的响应式变量
+const shouldAutoPlay = ref(false);
 // 开始自动播放
 const startAutoPlay = () => {
-  intervalId = setInterval(nextSlide, 2000); // 每3秒切换到下一张幻灯片
+  intervalId.value = setInterval(nextSlide, 2000); // 每2秒切换到下一张幻灯片
 };
 
 // 停止自动播放
 const stopAutoPlay = () => {
-  clearInterval(intervalId);
+  clearInterval(intervalId.value);
 };
+
+// 监听selectedExam的变化
+watch(selectedExam, (newExam) => {
+  // 根据paperInfoList的长度决定是否自动播放
+  shouldAutoPlay.value = newExam!.paperInfoList.length > 1;
+  if (shouldAutoPlay.value) {
+    startAutoPlay();
+  } else {
+    stopAutoPlay();
+  }
+}, { immediate: true }); // 立即执行以设置初始状态
 onMounted(() => {
-  async () => {
-    try {
-      const response = await request.post<DataRes>('/quiz/data');
-      quizData.value = response.data.data[0];
-    } catch (error) {
-      // 请求失败，处理错误
-      console.error('请求失败:', error);
-    }
-  };
-  startAutoPlay();
+  const source = axios.CancelToken.source(); // 创建一个取消令牌
+  axios.get('http://localhost:8080/quiz/data', {
+    cancelToken: source.token // 传递取消令牌
+  }) // 替换为您的API端点
+    .then(response => {
+      // 将响应数据赋值给examGroups
+      examGroups.value = response.data.data;
+    })
+    .catch(error => {
+      console.error('Error fetching data: ', error);
+    });
   let chartDom1 = document.getElementById('msg1');
   let chartDom2 = document.getElementById('msg2');
   let myChart1 = echarts.init(chartDom1);
   let myChart2 = echarts.init(chartDom2);
   option1 && myChart1.setOption(option1);
   option2 && myChart2.setOption(option2);
+  onUnmounted(() => {
+    source.cancel('Component unmounted'); // 组件卸载时取消请求
+  });
 })
 onUnmounted(() => {
   stopAutoPlay();
