@@ -1278,7 +1278,7 @@ watch(selectedExam, (newExam) => {
 }, { immediate: true }); // 立即执行以设置初始状态
 onMounted(() => {
   const source = axios.CancelToken.source(); // 创建一个取消令牌
-  axios.get('http://localhost:8080/quiz/data', {
+  axios.get('http://117.72.48.44:8080/quiz/data', {
     cancelToken: source.token // 传递取消令牌
   }) // 替换为您的API端点
     .then(response => {
